@@ -44,6 +44,22 @@ const loadCategories = () => {
         .catch(error => console.log(error));
 };
 
+// create load details 
+const loadDetails = (videoId) => {
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`)
+        .then(res => res.json())
+        .then(data => displayDetails(data.video))
+        .catch(err => console.log(err));
+}
+// create display details
+const displayDetails = (video) => {
+    const detailsContainer = document.getElementById('modalContainer');
+    detailsContainer.innerHTML = 
+    `<img src=${video.thumbnail}>
+    <p>${video.description}</p>
+    `
+    document.getElementById('customModal').showModal();
+}
 // create display categories
 const displayCategories = (categories) => {
     const categorySection = document.getElementById('categories');
@@ -62,7 +78,7 @@ const displayCategories = (categories) => {
 loadCategories();
 // load videos
 const loadVideos = () => {
-    fetch('https://openapi.programming-hero.com/api/phero-tube/videos')
+    fetch('https://openapi.programming-hero.com/api/phero-tube/videos?title=')
         .then(res => res.json())
         .then(data => displayVideos(data.videos))
         .catch(error => console.log(error));
@@ -113,7 +129,10 @@ const displayVideos = videos => {
                 video.authors[0].verified? `<img class="h-[20px] w-[20px]" src="asset/verified.png">`:''
             }
            </div>
-           <p>${video.others.views}</p>
+                <p>${video.others.views}</p>
+                <div>
+                    <button onclick="loadDetails('${video.video_id}')" class="btn btn-sm btn-error">Details</button>
+                </div>
            </div>
         </div>
         `;
@@ -121,3 +140,11 @@ const displayVideos = videos => {
        });
 };
 loadVideos();
+document.getElementById('search-input').addEventListener("keyup",(e) => {
+    console.log(e.target.value);
+    const inputVal = e.target.value;
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${inputVal}`)
+        .then(res => res.json())
+        .then(data => displayVideos(data.videos))
+        .catch(error => console.log(error));
+});
